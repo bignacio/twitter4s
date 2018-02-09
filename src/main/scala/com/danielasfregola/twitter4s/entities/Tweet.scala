@@ -10,6 +10,7 @@ final case class Tweet(contributors: Seq[Contributor] = Seq.empty,
                        current_user_retweet: Option[TweetId] = None,
                        entities: Option[Entities] = None,
                        extended_entities: Option[Entities] = None,
+                       extended_tweet: Option[ExtendedTweet] = None,
                        favorite_count: Int = 0,
                        favorited: Boolean = false,
                        filter_level: Option[String] = None,
@@ -41,4 +42,4 @@ final case class Tweet(contributors: Seq[Contributor] = Seq.empty,
                        withheld_in_countries: Seq[String] = Seq.empty,
                        withheld_scope: Option[String] = None,
                        metadata: Option[StatusMetadata] = None)
-    extends CommonStreamingMessage
+  extends CommonStreamingMessage
