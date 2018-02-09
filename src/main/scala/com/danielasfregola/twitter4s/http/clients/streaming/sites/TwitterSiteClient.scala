@@ -57,6 +57,6 @@ trait TwitterSiteClient {
     val repliesAll = replies.flatMap(x => if (x) Some("all") else None)
     val parameters = SiteParameters(follow, `with`, repliesAll, stringify_friend_ids, languages, stall_warnings)
     preProcessing()
-    Get(s"$siteUrl/site.json", parameters).processStream(f)
+    Get(s"$siteUrl/site.json", parameters).processStream()(f)
   }
 }

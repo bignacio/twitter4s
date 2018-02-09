@@ -5,6 +5,7 @@ import com.danielasfregola.twitter4s.entities.enums.FilterLevel
 import com.danielasfregola.twitter4s.entities.enums.FilterLevel.FilterLevel
 import com.danielasfregola.twitter4s.entities.enums.Language.Language
 import com.danielasfregola.twitter4s.entities.streaming.CommonStreamingMessage
+import com.danielasfregola.twitter4s.entities.streaming.common.{ConnectionEvents, NoOpEvents}
 import com.danielasfregola.twitter4s.http.clients.streaming.statuses.parameters._
 import com.danielasfregola.twitter4s.http.clients.streaming.{StreamingClient, TwitterStream}
 import com.danielasfregola.twitter4s.util.Configurations._
@@ -51,14 +52,15 @@ trait TwitterStatusClient {
                      locations: Seq[Double] = Seq.empty,
                      languages: Seq[Language] = Seq.empty,
                      stall_warnings: Boolean = false,
-                     filter_level: FilterLevel = FilterLevel.None)(
+                     filter_level: FilterLevel = FilterLevel.None,
+                     connectionEvents: ConnectionEvents = NoOpEvents)(
       f: PartialFunction[CommonStreamingMessage, Unit]): Future[TwitterStream] = {
     import streamingClient._
     require(follow.nonEmpty || tracks.nonEmpty || locations.nonEmpty,
             "At least one of 'follow', 'tracks' or 'locations' needs to be non empty")
     val filters = StatusFilters(follow, tracks, locations, languages, stall_warnings, filter_level)
     preProcessing()
-    Post(s"$statusUrl/filter.json", filters).processStream(f)
+    Post(s"$statusUrl/filter.json", filters).processStream(connectionEvents)(f)
   }
 
   /** Starts a streaming connection from Twitter's public API, which is a a small random sample of all public statuses.
@@ -91,7 +93,7 @@ trait TwitterStatusClient {
     import streamingClient._
     val parameters = StatusSampleParameters(languages, stall_warnings, tracks, filter_level)
     preProcessing()
-    Get(s"$statusUrl/sample.json", parameters).processStream(f)
+    Get(s"$statusUrl/sample.json", parameters).processStream()(f)
   }
 
   /** Starts a streaming connection from Twitter's firehose API of all public statuses.
@@ -122,6 +124,6 @@ trait TwitterStatusClient {
     require(Math.abs(count.getOrElse(0)) <= maxCount, s"count must be between -$maxCount and +$maxCount")
     val parameters = StatusFirehoseParameters(languages, count, stall_warnings)
     preProcessing()
-    Get(s"$statusUrl/firehose.json", parameters).processStream(f)
+    Get(s"$statusUrl/firehose.json", parameters).processStream()(f)
   }
 }

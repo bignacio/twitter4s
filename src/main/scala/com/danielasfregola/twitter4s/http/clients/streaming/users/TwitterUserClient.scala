@@ -72,6 +72,6 @@ trait TwitterUserClient {
                                     stall_warnings,
                                     filter_level)
     preProcessing()
-    Get(s"$userUrl/user.json", parameters).processStream(f)
+    Get(s"$userUrl/user.json", parameters).processStream()(f)
   }
 }
