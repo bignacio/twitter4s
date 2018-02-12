@@ -95,7 +95,6 @@ private[twitter4s] class StreamingClient(val consumerToken: ConsumerToken, val a
       connectionEvents: ConnectionEvents): Flow[HttpRequest, HttpResponse, Future[Http.OutgoingConnection]] = {
     connection.mapError {
       case error: Throwable => {
-        logger.error("Error in HTTP connection stream", error)
         connectionEvents.onDisconnected(error)
       }
       error
